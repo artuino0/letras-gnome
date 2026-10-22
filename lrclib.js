@@ -166,7 +166,8 @@ export class LrcLib {
     async _local(track) {
         const file = Gio.File.new_for_path(GLib.build_filenamev([LOCAL_DIR, `${LrcLib.localName(track)}.lrc`]));
         try {
-            const [bytes] = await new Promise((resolve, reject) => {
+            // load_contents_finish devuelve [ok, contenido, etag]
+            const [, bytes] = await new Promise((resolve, reject) => {
                 file.load_contents_async(this._cancellable, (f, r) => {
                     try {
                         resolve(f.load_contents_finish(r));

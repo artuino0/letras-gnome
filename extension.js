@@ -419,9 +419,15 @@ class LetrasIndicator extends PanelMenu.Button {
         const reset = new PopupMenu.PopupMenuItem('Regresar a tamaño y posición iniciales');
         reset.connect('activate', onReset);
         this.menu.addMenuItem(reset);
+        this.connect('destroy', () => {
+            this._destroyed = true;
+        });
     }
 
     setStatus(text) {
+        // Al cerrar sesión GNOME puede destruir el menú antes que disable()
+        if (this._destroyed)
+            return;
         this._status.label.text = text;
     }
 
