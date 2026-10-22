@@ -94,9 +94,13 @@ export class LrcLib {
         this._session = new Soup.Session({user_agent: 'Letras GNOME/1.0 (extensión personal)', timeout: 10});
         this._cancellable = new Gio.Cancellable();
         this._cache = new Map();
+        this._retryIds = new Set();
     }
 
     destroy() {
+        for (const id of this._retryIds)
+            GLib.source_remove(id);
+        this._retryIds.clear();
         this._cancellable.cancel();
         this._session.abort();
         this._cache.clear();
@@ -121,10 +125,16 @@ export class LrcLib {
         if (code === 429 && attempt < 3) {
             // LRCLIB limita ráfagas de solicitudes: espera y reintenta
             const retry = parseInt(msg.get_response_headers().get_one('Retry-After') ?? '') || attempt * 2;
-            await new Promise(resolve => GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, Math.min(retry, 10), () => {
-                resolve();
-                return GLib.SOURCE_REMOVE;
-            }));
+            await new Promise(resolve => {
+                const id = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, Math.min(retry, 10), () => {
+                    this._retryIds.delete(id);
+                    resolve();
+                    return GLib.SOURCE_REMOVE;
+                });
+                this._retryIds.add(id);
+            });
+            if (this._cancellable.is_cancelled())
+                throw new Gio.IOErrorEnum({code: Gio.IOErrorEnum.CANCELLED, message: 'cancelado'});
             return this._get(path, params, attempt + 1);
         }
         if (code !== 200)

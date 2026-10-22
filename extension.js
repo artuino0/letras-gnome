@@ -105,6 +105,10 @@ class LyricCard {
         this._content.add_child(this._curBox);
         this._next = this._sideLabel('letras-next');
 
+        // Al apagarse GNOME la tarjeta puede destruirse antes que disable()
+        this.actor.connect('destroy', () => {
+            this._destroyed = true;
+        });
         this.actor.connect('notify::hover', () => {
             this._showGrips(this.actor.hover);
             if (!this.actor.hover && !this._drag)
@@ -173,6 +177,8 @@ class LyricCard {
 
     // Coloca la tarjeta donde la dejó el usuario, o abajo al centro la primera vez
     place() {
+        if (this._destroyed)
+            return;
         this._applyWidth(this._width);
         const w = this.actor.width;
         const m = Main.layoutManager.primaryMonitor;
@@ -194,6 +200,8 @@ class LyricCard {
     }
 
     setTrack(text) {
+        if (this._destroyed)
+            return;
         this._title.text = text;
         this._restartMarquee();
     }
@@ -256,6 +264,8 @@ class LyricCard {
 
     // uri: file:// de la portada, o null para fondo liso
     setArt(uri) {
+        if (this._destroyed)
+            return;
         if (!uri) {
             this._art.hide();
             this._panel.remove_style_class_name('letras-has-art');
@@ -267,6 +277,8 @@ class LyricCard {
     }
 
     setLines(prev, cur, next, animate) {
+        if (this._destroyed)
+            return;
         // Espacio duro en vez de vacío para que el renglón conserve su alto
         this._prev.text = prev || ' ';
         this._cur.text = cur;
@@ -282,7 +294,7 @@ class LyricCard {
     }
 
     show() {
-        if (this._showing)
+        if (this._showing || this._destroyed)
             return;
         this._showing = true;
         this.actor.show();
@@ -292,7 +304,7 @@ class LyricCard {
     }
 
     hide() {
-        if (!this._showing || this._drag)
+        if (!this._showing || this._drag || this._destroyed)
             return;
         this._showing = false;
         this.actor.remove_all_transitions();
@@ -363,11 +375,16 @@ class LyricCard {
     }
 
     destroy() {
+        const alive = !this._destroyed;
         this._destroyed = true;
-        this._stopMarquee();
+        if (this._marqueeId)
+            GLib.source_remove(this._marqueeId);
+        this._marqueeId = 0;
         this._grab?.dismiss();
         St.ThemeContext.get_for_stage(global.stage).disconnect(this._scaleId);
         Main.layoutManager.disconnect(this._monitorsId);
+        if (!alive)
+            return;
         Main.layoutManager.removeChrome(this.actor);
         this.actor.destroy();
     }

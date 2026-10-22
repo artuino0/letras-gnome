@@ -40,7 +40,8 @@ export class ArtCache {
                 }
             });
         });
-        if (msg.get_status() !== Soup.Status.OK || !bytes.get_size())
+        // status_code en vez de get_status(): este truena con códigos que GJS no conoce
+        if (msg.status_code !== 200 || !bytes.get_size())
             return null;
         await new Promise((resolve, reject) => {
             file.replace_contents_bytes_async(bytes, null, false, Gio.FileCreateFlags.NONE,

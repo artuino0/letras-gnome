@@ -1,8 +1,9 @@
 {
-  "uuid": "letras@ziner",
+  "uuid": "letras@artuino0.github.io",
   "name": "Letras",
-  "description": "Letra sincronizada flotante de la canción que suena: línea anterior, actual y siguiente. Usa MPRIS y LRCLIB.",
+  "description": "Floating synced lyrics for the song that is playing: previous, current and next line, with the album art as a translucent background. Works with any MPRIS player (Spotify, Firefox, Chrome, VLC…). Drag to move, drag the sides to resize.\n\nLetra sincronizada flotante de la canción que suena: línea anterior, actual y siguiente.\n\nPrivacy: the title, artist, album and duration of the current song are sent to lrclib.net to look up the lyrics, and album art is downloaded from the URL given by the player.",
   "shell-version": ["50"],
+  "url": "https://github.com/artuino0/letras-gnome",
   "settings-schema": "org.gnome.shell.extensions.letras",
   "version": 1
 }
