@@ -4,6 +4,8 @@ import Gio from 'gi://Gio';
 import Soup from 'gi://Soup?version=3.0';
 
 const API = 'https://lrclib.net/api/';
+// Letras propias: ~/.local/share/letras/lrc/<artista> - <título>.lrc, tienen prioridad sobre LRCLIB
+const LOCAL_DIR = GLib.build_filenamev([GLib.get_user_data_dir(), 'letras', 'lrc']);
 const MAX_DURATION_DIFF = 8; // segundos de diferencia aceptables entre versiones
 
 // Quita sufijos que los reproductores agregan y LRCLIB no suele tener
@@ -156,6 +158,30 @@ export class LrcLib {
         return candidates.sort((a, b) => score(a) - score(b))[0] ?? null;
     }
 
+    // Nombre de archivo con el que se busca una letra local
+    static localName(track) {
+        return `${track.artist} - ${track.title}`.replace(/[/\\\u0000]/g, '_');
+    }
+
+    async _local(track) {
+        const file = Gio.File.new_for_path(GLib.build_filenamev([LOCAL_DIR, `${LrcLib.localName(track)}.lrc`]));
+        try {
+            const [bytes] = await new Promise((resolve, reject) => {
+                file.load_contents_async(this._cancellable, (f, r) => {
+                    try {
+                        resolve(f.load_contents_finish(r));
+                    } catch (e) {
+                        reject(e);
+                    }
+                });
+            });
+            const lines = parseLrc(new TextDecoder().decode(bytes));
+            return lines.length ? {lines, name: `${track.title} — ${track.artist} (local)`} : null;
+        } catch {
+            return null;
+        }
+    }
+
     // Devuelve {lines, name} o null si no hay letra sincronizada
     async find(track) {
         if (!track?.title)
@@ -163,6 +189,12 @@ export class LrcLib {
         const key = track.trackKey;
         if (this._cache.has(key))
             return this._cache.get(key);
+
+        const local = await this._local(track);
+        if (local) {
+            this._cache.set(key, local);
+            return local;
+        }
 
         const secs = track.length ? Math.round(track.length / 1e6) : undefined;
         const tries = guesses(track);
