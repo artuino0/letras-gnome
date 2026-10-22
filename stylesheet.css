@@ -1,0 +1,52 @@
+/* El margen transparente de .letras-outer contiene la sombra, así no deja rastros al moverla */
+.letras-outer {
+  padding: 14px;
+}
+.letras-card {
+  background-color: rgba(22, 22, 28, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+}
+.letras-card.letras-has-art {
+  background-color: transparent;
+}
+.letras-art {
+  border-radius: 19px;
+  background-size: cover;
+  background-position: center;
+}
+.letras-shade {
+  border-radius: 19px;
+  background-color: transparent;
+}
+.letras-has-art .letras-shade {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+.letras-content {
+  padding: 14px 28px 16px 28px;
+  spacing: 6px;
+}
+.letras-grip {
+  width: 4px;
+  height: 34px;
+  margin: 0 5px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.35);
+}
+.letras-title {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  padding-bottom: 4px;
+}
+.letras-prev, .letras-next {
+  text-align: center;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+.letras-current {
+  text-align: center;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}

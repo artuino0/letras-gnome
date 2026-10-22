@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.letras" path="/org/gnome/shell/extensions/letras/">
+    <key name="visible" type="b">
+      <default>true</default>
+      <summary>Mostrar la tarjeta de letra</summary>
+    </key>
+    <key name="show-art" type="b">
+      <default>true</default>
+      <summary>Usar la portada del álbum como fondo</summary>
+    </key>
+    <key name="width" type="i">
+      <default>720</default>
+      <summary>Ancho de la tarjeta en píxeles lógicos</summary>
+    </key>
+    <key name="pos-x" type="i">
+      <default>-1</default>
+      <summary>Posición horizontal de la tarjeta (-1 = centrada)</summary>
+    </key>
+    <key name="pos-y" type="i">
+      <default>-1</default>
+      <summary>Posición vertical de la tarjeta (-1 = abajo)</summary>
+    </key>
+  </schema>
+</schemalist>

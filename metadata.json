@@ -1,0 +1,8 @@
+{
+  "uuid": "letras@ziner",
+  "name": "Letras",
+  "description": "Letra sincronizada flotante de la canción que suena: línea anterior, actual y siguiente. Usa MPRIS y LRCLIB.",
+  "shell-version": ["50"],
+  "settings-schema": "org.gnome.shell.extensions.letras",
+  "version": 1
+}
